@@ -1,0 +1,52 @@
+#include <stdlib.h>
+#include <string.h>
+
+#include "{{ spec.module }}.h"
+
+{% for table in spec.tables.values() %}
+void {{ table.name }}_malloc(struct {{ table.name }} **obj, size_t capacity) {
+    *obj = malloc(sizeof(struct {{ table.name }})) ;
+    
+    (*obj)->size = 0 ;
+    (*obj)->capacity = capacity ;
+    
+    {% for column in table.columns %}
+    {% if column.type_ is scalar %}
+    (*obj)->{{ column.name }} = malloc(sizeof({{ column.type_ | c_type }}) * capacity) ;
+    {% else %}
+    for (size_t i = 0; i < {{ column.type_.length_constant }}; i++) {
+        (*obj)->{{ column.name }}[i] = malloc(sizeof({{ column.type_ | c_type }}) * capacity);
+    }
+    {% endif %}
+    {% endfor %}
+}
+
+void {{ table.name }}_free(struct {{ table.name }} *obj) {
+    {% for column in table.columns %}
+    {% if column.type_ is scalar %}
+    free(obj->{{ column.name }}) ;
+    {% else %}
+    for (size_t i = 0; i < {{ column.type_.length_constant }}; i++) {
+         free(obj->{{ column.name }}[i]) ;
+    }
+    {% endif %}
+    {% endfor %}
+    
+    free(obj) ;
+}
+
+void {{ table.name }}_zero(struct {{ table.name }} *obj) {
+    obj->size = 0 ;
+    
+    {% for column in table.columns %}
+    {% if column.type_ is scalar %}
+    memset(obj->{{ column.name }}, 0, sizeof({{ column.type_ | c_type }}) * obj->capacity) ;
+    {% else %}
+    for (size_t i = 0; i < {{ column.type_.length_constant }}; i++) {
+        memset(obj->{{ column.name }}[i], 0, sizeof({{ column.type_ | c_type }}) * obj->capacity);
+    }
+    {% endif %}
+    {% endfor %}
+}
+
+{% endfor %}

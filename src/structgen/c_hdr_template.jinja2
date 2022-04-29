@@ -1,0 +1,34 @@
+#ifndef __{{ spec.module | upper }}_H__
+#define __{{ spec.module | upper }}_H__
+
+#include <stddef.h>
+#include <stdint.h>
+
+{% for const in spec.constants.values() %}
+#define {{ const.name }} {{ const.value }}
+{% endfor %}
+
+{% for table in spec.tables.values() %}
+struct {{ table.name }} {
+    uint64_t size;
+    uint64_t capacity;
+
+    {% for column in table.columns %}
+    {% if column.type_ is scalar %}
+    {{ column.type_ | c_type }}* {{ column.name }};
+    {% else %}
+    {{ column.type_ | c_type }}* {{ column.name }}[{{ column.type_.length_constant }}];
+    {% endif %}
+    {% endfor %}
+} ;
+
+{% endfor %}
+
+{% for table in spec.tables.values() %}
+void {{ table.name }}_malloc(struct {{ table.name }} **obj, size_t capacity) ;
+void {{ table.name }}_free(struct {{ table.name }} *obj) ;
+void {{ table.name }}_zero(struct {{ table.name }} *obj) ;
+
+{% endfor %}
+
+#endif /* __{{ spec.module | upper }}_H__ */

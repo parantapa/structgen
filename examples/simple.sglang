@@ -1,0 +1,17 @@
+module hello ;
+
+const N_ATTRS = 10 ;
+
+table cur_state {
+    pid u32,
+    cur_state u8,
+    next_state u8,
+    dwell_time u16
+}
+
+table soc_int {
+    pid u32,
+    lid u32,
+    attr_contacts u32[N_ATTRS],
+    n_contacts u16
+}
