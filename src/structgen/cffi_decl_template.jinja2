@@ -1,12 +1,8 @@
-#ifndef __{{ spec.module | upper }}_H__
-#define __{{ spec.module | upper }}_H__
+"""CFFI cdef and set_source definitions for {{ spec.module }}."""
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-
+CDEF_SOURCE = """
 {% for const in spec.constants.values() %}
-#define {{ const.name }} {{ const.value }}
+#define {{ const.name }} ...
 {% endfor %}
 
 {% for table in spec.tables.values() %}
@@ -18,7 +14,7 @@ struct {{ table.name }} {
     {% if column.type_ is scalar %}
     {{ column.type_ | c_type }}* {{ column.name }};
     {% else %}
-    {{ column.type_ | c_type }}* {{ column.name }}[{{ column.type_.length_constant }}];
+    {{ column.type_ | c_type }}* {{ column.name }}[...];
     {% endif %}
     {% endfor %}
 } ;
@@ -35,5 +31,8 @@ int {{ table.name }}_print_csv(struct {{ table.name }} *obj) ;
 int {{ table.name }}_scan_csv(struct {{ table.name }} *obj) ;
 
 {% endfor %}
+"""
 
-#endif /* __{{ spec.module | upper }}_H__ */
+SET_SOURCE_C_HEADER_SOURCE = """
+    #include "{{ spec.module }}.h"
+"""

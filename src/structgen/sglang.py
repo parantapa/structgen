@@ -1,4 +1,4 @@
-"""Structgen Language Parser."""
+"""StructGen Language Parser."""
 
 from dataclasses import dataclass
 from importlib.resources import read_text
@@ -38,8 +38,8 @@ class Constant:
 @dataclass
 class Spec:
     module: str
-    constants: list[Constant]
-    tables: list[Table]
+    constants: dict[str, Constant]
+    tables: dict[str, Table]
 
 
 class SpecTransformer(Transformer):  # type: ignore
@@ -79,5 +79,3 @@ def get_parser() -> Lark:
     grammar = read_text("structgen", "sglang_grammar.lark")
     parser = Lark(grammar, start="spec", parser="lalr")
     return parser
-
-
