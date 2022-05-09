@@ -25,10 +25,8 @@ struct {{ table.name }} {
 int {{ table.name }}_malloc(struct {{ table.name }} *obj, size_t capacity) ;
 void {{ table.name }}_free(struct {{ table.name }} *obj) ;
 void {{ table.name }}_zero(struct {{ table.name }} *obj) ;
-int {{ table.name }}_read_csv(struct {{ table.name }} *obj, FILE *stream) ;
+
 int {{ table.name }}_write_csv(struct {{ table.name }} *obj, FILE *stream) ;
-int {{ table.name }}_print_csv(struct {{ table.name }} *obj) ;
-int {{ table.name }}_scan_csv(struct {{ table.name }} *obj) ;
 
 {% endfor %}
 """

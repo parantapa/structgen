@@ -75,38 +75,4 @@ int {{ table.name }}_write_csv(struct {{ table.name }} *obj, FILE *stream) {
     return 0;
 }
 
-int {{ table.name }}_read_csv(struct {{ table.name }} *obj, FILE *stream) {
-    {% set fmt, cols, n_cols = scanf_fmt("obj", "i", table, spec) %}
-    int ret;
-
-    obj->size = 0;
-
-    /* skip the first header line */
-    ret = fscanf(stream, "%*[^\n]\n");
-    if (ret == EOF) {
-        return 1;
-    }
-
-    while (obj->size < obj->capacity) {
-        size_t i = obj->size;
-
-        ret = fscanf(stream, {{ fmt }} "\n", {{ cols }});
-        if (ret == {{ n_cols }}) {
-            obj->size += 1;
-        } else {
-            return 0;
-        }
-    }
-
-    return 0;
-}
-
-int {{ table.name }}_print_csv(struct {{ table.name }} *obj) {
-    return {{ table.name }}_write_csv(obj, stdout);
-}
-
-int {{ table.name }}_scan_csv(struct {{ table.name }} *obj) {
-    return {{ table.name }}_read_csv(obj, stdin);
-}
-
 {% endfor %}

@@ -28,17 +28,6 @@ TYPE_PRINTF_FMT = {
     "i64": "PRIi64",
 }
 
-TYPE_SCANF_FMT = {
-    "u8": "SCNu8",
-    "u16": "SCNu16",
-    "u32": "SCNu32",
-    "u64": "SCNu64",
-    "i8": "SCNi8",
-    "i16": "SCNi16",
-    "i32": "SCNi32",
-    "i64": "SCNi64",
-}
-
 
 def c_type(type_: ScalarType | ArrayType) -> str:
     return TYPE_CTYPE[type_.name]
@@ -80,41 +69,12 @@ def printf_fmt(
     return hdrs, fmts, cols
 
 
-def scanf_fmt(
-    tabvar: str, idxvar: str, table: Table, spec: Spec
-) -> tuple[str, str, int]:
-    fmts, cols, n_cols = [], [], 0
-    for column in table.columns:
-        if is_scalar(column.type_):
-            fmt = TYPE_SCANF_FMT[column.type_.name]
-            col = f"&({tabvar}->{column.name}[{idxvar}])"
-
-            fmts.append(fmt)
-            cols.append(col)
-            n_cols += 1
-        else:
-            length_constant = column.type_.length_constant  # type: ignore
-            length = spec.constants[length_constant].value
-            for i in range(length):
-                fmt = TYPE_SCANF_FMT[column.type_.name]
-                col = f"&({tabvar}->{column.name}[{i}][{idxvar}])"
-
-                fmts.append(fmt)
-                cols.append(col)
-                n_cols += 1
-
-    fmts = '"%" ' + ' ",%" '.join(fmts)
-    cols = ", ".join(cols)
-
-    return fmts, cols, n_cols
-
-
 def make_env() -> Environment:
     """Make the jinja environment."""
     env = Environment(trim_blocks=True, lstrip_blocks=True, undefined=StrictUndefined)
     env.filters["c_type"] = c_type
     env.tests["scalar"] = lambda x: isinstance(x, ScalarType)
-    env.globals.update({"printf_fmt": printf_fmt, "scanf_fmt": scanf_fmt})
+    env.globals.update({"printf_fmt": printf_fmt})
     return env
 
 
