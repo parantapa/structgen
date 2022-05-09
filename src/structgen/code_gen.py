@@ -15,6 +15,8 @@ TYPE_CTYPE = {
     "i16": "int16_t",
     "i32": "int32_t",
     "i64": "int64_t",
+    "f32": "float",
+    "f64": "double"
 }
 
 TYPE_PRINTF_FMT = {
@@ -26,6 +28,8 @@ TYPE_PRINTF_FMT = {
     "i16": "PRIi16",
     "i32": "PRIi32",
     "i64": "PRIi64",
+    "f32": '"g"',
+    "f64": '"g"',
 }
 
 
